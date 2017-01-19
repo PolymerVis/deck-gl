@@ -1,5 +1,7 @@
 ## deck-gl
 
+[Documentation](https://polymervis.github.io/deck-gl)
+
 [deck.gl](http://deck.gl) is a WebGL-powered framework for visual exploratory data analysis of large datasets.
 
 `deck-gl` is the Polymer element equivalent to the React component provided by Uber.
