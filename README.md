@@ -1,6 +1,15 @@
 ## deck-gl
 
-[Documentation](https://polymervis.github.io/deck-gl)
+### Usage
+API documentation and Demos [here](https://polymervis.github.io/deck-gl)
+
+### Installation
+
+```
+bower install --save deck-gl
+```
+
+### Summary
 
 [deck.gl](http://deck.gl) is a WebGL-powered framework for visual exploratory data analysis of large datasets.
 
@@ -44,7 +53,7 @@ recognize it.
 </mapbox-gl>
 ```
 
-## Available layers
+### Available layers
 - scatterplot-layer
 - line-layer
 - arc-layer
