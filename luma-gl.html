@@ -1,0 +1,48 @@
+<link rel="import" href="../polymer/polymer.html">
+<dom-module id="luma-gl">
+  <script>
+    Polymer({
+
+      is: 'deck-gl',
+
+      properties: {
+        loaded: Boolean,
+        canvas: Object,
+        gl: {
+          type: Object,
+          notify: true,
+          readonly: true
+        },
+        vertexShader: {
+          type: String
+        },
+        fragmentShader: {
+          type: String
+        },
+        program: {
+          type: Object,
+          computed: '_initProgram(vertexShader, fragmentShader)'
+        }
+      },
+
+      attached: function() {
+        var self = this;
+        var script = document.createElement('script');
+        script.src = '../node_modules/luma.gl/dist/lumagl.min.js';
+        script.onload = function() {
+          self.loaded = true;
+          self.gl = LumaGL.createGLContext({canvas: self.canvas});
+        };
+        this.appendChild(script);
+      },
+
+      _initProgram: function(vertexShader, fragmentShader) {
+        return new Program(gl, {
+          vs: vertexShader,
+          fs: fragmentShader
+        });
+      }
+
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,85 @@
+{
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "Polymer": false,
+    "mapboxgl": false,
+    "LumaGL": false,
+    "DeckGL": false,
+    "DeckGLPolymer": false
+  },
+  "extends": [
+    "eslint:recommended",
+    "eslint-config-google"
+  ],
+  "plugins": [
+    "html"
+  ],
+  "rules": {
+    "one-var": [
+      "warn",
+      {
+        "initialized": "never",
+        "uninitialized": "always"
+      }
+    ],
+    "no-var": ["off"],
+    "comma-dangle": ["error", "never"],
+    "guard-for-in":[
+      "warn"
+    ],
+    "block-scoped-var":[
+      "warn"
+    ],
+    "camelcase": [
+      "off",
+      {
+        "properties": "always"
+      }
+    ],
+    "no-console": [
+      "off"
+    ],
+    "require-jsdoc": [
+      "warn",
+      {
+        "require": {
+          "FunctionDeclaration": true,
+          "MethodDefinition": false,
+          "ClassDeclaration": false
+        }
+      }
+    ],
+    "no-redeclare":[
+      "error",
+      {
+        "builtinGlobals": true
+      }
+    ],
+    "new-cap": [
+      "error",
+      {
+        "capIsNewExceptions": [
+          "Polymer"
+        ]
+      }
+    ],
+    "indent": [
+      "error",
+      2
+    ],
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ]
+  }
+}

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>deck-gl demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../deck-gl.html">
+    <link rel="import" href="../mapbox-gl.html">
+    <link rel="import" href="../scatterplot-layer.html">
+    <link rel="import" href="../../google-map/google-map.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+      body {
+        margin: 0px;
+        padding: 0px;
+        box-sizing: border-box;
+      }
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <template id="demo" is="dom-bind">
+      <mapbox-gl
+        id="map"
+        access-token="[[key]]"
+        latitude="{{lat}}"
+        longitude="{{lng}}"
+        zoom="{{zoom}}"
+        pitch="{{pitch}}"
+        bearing="{{bearing}}">
+          <deck-gl id="deck"
+            zoom="[[zoom]]"
+            latitude="[[lat]]"
+            longitude="[[lng]]"
+            pitch="[[pitch]]"
+            bearing="[[bearing]]"
+            on-layer-tap="_onTap">
+            <scatterplot-layer deck-gl-layer
+              pickable
+              layer-id="scatterplot"
+              radius=5
+              accessor-functions="[[accessorFunctions]]"
+              data="[[pointData]]"></scatterplot-layer>
+          </deck-gl>
+      </mapbox-gl>
+    </template>
+    <script>
+      // url to taxi data in datagov.sg
+      var url = 'https://api.data.gov.sg/v1/transport/taxi-availability';
+      var datagovsgKey = 'BWbh4KoRAq8W7iCGbZoqYtpwWxo2y6In'; // api-key
+      var demo = document.querySelector('#demo');
+      // please use your own mapboxgl api-key
+      demo.key = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpbG10dnA3NzY3OTZ0dmtwejN2ZnUycjYifQ.1W5oTOnWXQ9R1w8u3Oo1yA';
+      demo.lat = 1.3521;
+      demo.lng = 103.8198;
+      demo.zoom = 10;
+      demo.pitch = 60;
+      demo.bearing = -60;
+      demo._onTap = function(event, info) {
+        console.log(event);
+        console.log(info);
+      };
+      demo.accessorFunctions = {
+        getPosition: function(d) { return [d[0], d[1], 0]; },
+        getColor: function(d) { return [255, 0, 255]; },
+        getRadius: function(d) { return 5; }
+      };
+
+      makeRequest(url);
+
+      // request taxi data from datagovsg
+      function makeRequest(url) {
+        var httpRequest = new XMLHttpRequest();
+        if (!httpRequest) {
+          alert('Giving up :( Cannot create an XMLHTTP instance');
+          return false;
+        }
+        httpRequest.onreadystatechange = dataLoaded;
+        httpRequest.open('GET', url);
+        httpRequest.setRequestHeader('api-key', datagovsgKey);
+        httpRequest.send();
+
+        function dataLoaded() {
+          if (httpRequest.readyState === XMLHttpRequest.DONE) {
+            if (httpRequest.status === 200) {
+              var geojson = JSON.parse(httpRequest.responseText);
+              var points = geojson.features[0].geometry.coordinates;
+              demo.pointData = points;
+            } else {
+              alert('There was a problem with the request.');
+            }
+          }
+        }
+      }
+
+
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,75 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="./deck-gl-layer-behavior.html">
+
+<dom-module id="choropleth-layer">
+  <script>
+    /*
+     * The `choropleth-layer` wraps around the [ChoroplethLayer](https://uber.github.io/deck.gl/#/layers/core-layers/choropleth-layer) in deck.gl.
+     *
+     * The Choropleth Layer takes in GeoJson formatted data and renders it as interactive choropleths.
+     *
+     * By supplying a GeoJson FeatureCollection you can add multiple polygons.
+     * Each Feature has an optional "properties" object. The layer will look for
+     * an optional property color, which is expected to be a 4 element array of
+     * values between 0 and 255, representing the rgba values for the color of
+     * that Feature.
+     *
+     * If not provided, the default rgba will be [0, 0, 255, 255].
+     *
+     * @demo demo/choropleth-layer.html
+     */
+    Polymer({
+
+      is: 'choropleth-layer',
+      behaviors: [
+        DeckGLPolymer.BaseLayer
+      ],
+      properties: {
+        /*
+         * Draw choropleth contour if true, else fill choropleth area.
+         */
+        drawContour: {
+          type: Boolean,
+          value: false
+        },
+        /*
+         * A map of accessor functions to retrieve specific data from the
+         * dataset. The following accessors are available for ChoroplethLayer:
+         * - getColor (default: feature => feature.properties.color)
+         */
+        accessorFunctions: {
+          type: Object,
+          value: null
+        }
+      },
+
+      observers: [
+        '_updateProps(drawContour, accessorFunctions)',
+        '_updateLayer(_props)'
+      ],
+
+      get layer() {
+        if (!this.data) return;
+        return new DeckGL.ChoroplethLayer(this._cleanObject(this._props));
+      },
+
+      _updateProps: function() {
+        if (!this.data) return;
+        var self = this;
+        var props = this._getBaseProps();
+        props.drawContour = this.drawContour;
+        if (this.accessorFunctions) {
+          props.getColor = this.accessorFunctions.getColor;
+        }
+        this._props = props;
+      },
+
+      _updateLayer: function(_props) {
+        if (!_props) return;
+        this.fire('layer-updated', this.layer, {node: this.parentNode});
+      }
+
+    });
+  </script>
+</dom-module>
