@@ -1,4 +1,2 @@
 bower_components/
-node_modules/*
-!node_modules/luma.gl/dist/lumagl.min.js
-!node_modules/deck.gl/dist/deckgl.min.js
+node_modules/

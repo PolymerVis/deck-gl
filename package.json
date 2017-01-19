@@ -3,10 +3,18 @@
   "version": "1.0.0",
   "description": "Polymer wrappers for deck.gl and luma.gl",
   "keywords": [
+    "polymer",
+    "web-components",
+    "deck.gl",
+    "luma.gl",
+    "deckgl",
+    "lumagl",
+    "mapboxgl",
     "webgl",
     "visualization",
-    "overlay",
-    "layer"
+    "geospatial",
+    "map",
+    "overlay"
   ],
   "main": "build-luma-deck.js",
   "directories": {
