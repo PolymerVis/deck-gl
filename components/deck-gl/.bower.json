@@ -1,0 +1,52 @@
+{
+  "name": "deck-gl",
+  "description": "Polymer 1.0 wrapper for Deck.gl and Luma.gl",
+  "main": "deck-gl.html",
+  "keywords": [
+    "polymer",
+    "web-components",
+    "deck.gl",
+    "luma.gl",
+    "deckgl",
+    "lumagl",
+    "mapboxgl",
+    "webgl",
+    "visualization",
+    "geospatial",
+    "map",
+    "overlay"
+  ],
+  "authors": [
+    "eterna2 <eterna2@hotmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "mapbox-gl-js": "^0.11.0",
+    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.5"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "demo"
+  ],
+  "homepage": "https://github.com/polymervis/deck-gl",
+  "_release": "9503f251b9",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "9503f251b958c616aab080161447bdea50b6172e"
+  },
+  "_source": "https://github.com/polymervis/deck-gl.git",
+  "_target": "master",
+  "_originalSource": "polymervis/deck-gl",
+  "_direct": true
+}

@@ -1,0 +1,72 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="./deck-gl-layer-behavior.html">
+
+<dom-module id="arc-layer">
+  <script>
+    /*
+     * The `arc-layer` wraps around the [Arc Layer](https://uber.github.io/deck.gl/#/layers/core-layers/arc-layer) in deck.gl.
+     *
+     * The Arc Layer takes in paired latitude and longitude coordinated points and render them as arcs that links the starting and ending points.
+     *
+     * @demo demo/arc-layer.html
+     */
+    Polymer({
+
+      is: 'arc-layer',
+      behaviors: [
+        DeckGLPolymer.BaseLayer
+      ],
+      properties: {
+        /*
+         * The stroke width used to draw each line.
+         */
+        strokeWidth: {
+          type: Number,
+          value: 1
+        },
+        /*
+         * A map of accessor functions to retrieve specific data from the
+         * dataset. The following accessors are available for LineLayer:
+         * - getSourcePosition  (default: object => object.sourcePosition)
+         * - getTargetPosition  (default: object => object.targetPosition)
+         * - getSourceColor  (default: object => object.color)
+         * - getTargetColor   (default: object => object.color)
+         */
+        accessorFunctions: {
+          type: Object,
+          value: null
+        }
+
+      },
+
+      observers: [
+        '_updateProps(strokeWidth, accessorFunctions)',
+        '_updateLayer(_props)'
+      ],
+
+      get layer() {
+        return new DeckGL.ArcLayer(this._cleanObject(this._props));
+      },
+
+      _updateProps: function() {
+        if (!this.data) return;
+        var props = this._getBaseProps();
+        props.strokeWidth = this.strokeWidth;
+        if (this.accessorFunctions) {
+          props.getSourcePosition = this.accessorFunctions.getSourcePosition;
+          props.getTargetPosition = this.accessorFunctions.getTargetPosition;
+          props.getSourceColor  = this.accessorFunctions.getSourceColor ;
+          props.getTargetColor  = this.accessorFunctions.getTargetColor ;
+        }
+        this._props = props;
+      },
+
+      _updateLayer: function(_props) {
+        if (!_props) return;
+        this.fire('layer-updated', this.layer, {node: this.parentNode});
+      }
+
+    });
+  </script>
+</dom-module>

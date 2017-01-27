@@ -1,0 +1,210 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+  (function(DeckGLPolymer) {
+    /*
+     * The `DeckGLPolymer.BaseLayer` behavior is the wrapper for the Layer class in deck.gl.
+     * It provides a number of base properties which are availabe in all layers.
+     * @polymerBehavior
+     */
+    DeckGLPolymer.BaseLayer = {
+      properties: {
+        /*
+         * The id must be unique among all your layers. The layer's id defaults
+         * to the Layer class name. If you have more than one instance of the
+         * same Layer subclass you must supply unique id strings.
+         *
+         * Note that for sublayers, the actual layer id is going to be the
+         * supplied layer id appended to the parent layer's (i.e. the composite
+         * layer's) id, which helps avoid id collisions in this case.
+         */
+        layerId: {
+          type: String,
+          value: null
+        },
+        /*
+         * Whether layer responds to mouse events.
+         */
+        pickable: {
+          type: Boolean,
+          value: false
+        },
+        /*
+         * Whether layer is drawn.
+         *
+         * For performance reasons it is often better to control layer
+         * visibility with the hide property rather than through conditional
+         * rendering.
+         */
+        hide: {
+          type: Boolean,
+          value: false
+        },
+        /*
+         * The opacity of the layer. deck.gl automatically applies gamma to the
+         * opacity in an attempt to make opacity changes appear linear (i.e. the
+         * opacity is visually proportional to the value of the prop.)
+         *
+         * Note: While it is a recommended convention that all deck.gl layers
+         * should support the opacity prop, it is up to each layer's fragment
+         * shader to implement support for opacity.
+         */
+        opacity: {
+          type: Number,
+          value: 1.0
+        },
+        /*
+         * The data prop should contain an iterable JavaScript container,
+         * please see JavaScript [Symbol.iterator].
+         */
+        data: {
+          type: Array,
+          value: null
+        },
+        /*
+         * Whether data prop is an Object (instead of an Array).
+         *
+         * deck.gl will automatically supply a `dataIterator` if set to true.
+         */
+        dataIsObject: {
+          type: Boolean,
+          value: false
+        },
+        /*
+         * Normally the iterator for data is extracted by looking at the
+         * [Symbol.iterator] field of the supplied container. Sometimes
+         * [Symbol.iterator] is not defined, or doesn't provide the desired
+         * iteration order, so deck.gl allows you to supply your own iterator.
+         *
+         * Note: deck.gl even supplies an object iterator
+         * (makeObjectValueIterator) making it possible to use objects directly
+         * as data props in deck.gl without first converting them to arrays.
+         */
+        dataIterator: {
+          type: Object,
+          value: null
+        },
+        /*
+         * Specifies how layer positions and offsets should be interpreted.
+         *
+         * The default is to interpret positions as latitude and longitude,
+         * however it is also possible to interpret positions as meter offsets
+         * from the projectionCenter prop.
+         *
+         * See the article on [Coordinate Systems](https://uber.github.io/deck.gl/#/documentation/advanced-topics/coordinate-systems) for details.
+         *
+         * *Note:
+         * Normally only used when the application wants to work with
+         * coordinates that are not Web Mercator projected longitudes/latitudes.*
+         */
+        projectionMode: {
+          type: Number,
+          value: null
+        },
+        /*
+         * Required when the projectionMode is in meter offsets.
+         *
+         * Specifies a longitude and a latitude from which meter offsets are calculated.
+         *
+         * See the article on [Coordinate Systems](https://uber.github.io/deck.gl/#/documentation/advanced-topics/coordinate-systems) for details.
+         *
+         * *Note:
+         * Normally only used when the application wants to work with
+         * coordinates that are not Web Mercator projected longitudes/latitudes.*
+         */
+        projectionCenter: {
+          type: Array,
+          value: null
+        },
+        /*
+         * An optional 4x4 matrix that is premultiplied into the affine
+         * projection matrices used by shader project GLSL function and the
+         * Viewport's project and unproject JavaScript function.
+         *
+         * Allows local coordinate system transformations to be applied to a
+         * layer, which is useful when composing data from multiple sources that
+         * use different coordinate systems.
+         *
+         * Note that the matrix projection is applied after the non-linear
+         * mercator projection calculations are resolved, so be careful when
+         * using view matrices with lng/lat encoded coordinates.
+         *
+         * *Note:
+         * Normally only used when the application wants to work with
+         * coordinates that are not Web Mercator projected longitudes/latitudes.*
+         */
+        viewMatrix: {
+          type: Array,
+          value: null
+        },
+        /*
+         * This prop causes the data prop to be compared using a custom
+         * comparison function. The comparison function is called with the old
+         * data and the new data objects, and is expected to return true if they
+         * compare equally.
+         *
+         * Used to override the default shallow comparison of the data object.
+         *
+         * As an illustration, the app could set this to e.g. 'lodash.isequal',
+         * enabling deep comparison of the data structure. This particular
+         * examples would obviously have considerable performance impact and
+         * should only be used as a temporary solution for small data sets until
+         * the application can be refactored to avoid the need.
+         */
+        dataComparator: {
+          type: Object,
+          value: null
+        },
+        /*
+         * deck.gl is often able to autodetect the number of objects in your
+         * data prop, however in special situations it can be useful to control
+         * this directly.
+         */
+        numInstances: {
+          type: Number,
+          value: null
+        },
+        _props: Object
+      },
+
+      observers: [
+        '_updateProps(layerId, pickable, hide, opacity, data, dataIsObject, dataIterator, projectionMode, projectionCenter, viewMatrix, dataComparator, numInstances)',
+      ],
+
+      _updateProps: function() {
+        this._props = this._getBaseProps();
+      },
+
+      _cleanObject: function(map) {
+        if (!map) return {};
+        for (var key in map) {
+          if (map[key] === null || map[key] === undefined) delete map[key];
+        }
+        return map;
+      },
+
+      _getBaseProps: function() {
+        if (!this.data) return;
+
+        this.dataIterator = this.dataIsObject ?
+          DeckGL.makeObjectValueIterator(this.data) : null;
+
+
+        var props = {
+          visible: !this.hide,
+          opacity: this.opacity,
+          data: this.data,
+          layerId: this.layerId,
+          pickable: this.pickable,
+          dataIterator: this.dataIterator,
+          projectionMode: this.projectionMode,
+          projectionCenter: this.projectionCenter,
+          viewMatrix: this.viewMatrix,
+          numInstances: this.numInstances
+        };
+
+        return props;
+      }
+    };
+  })(window.DeckGLPolymer = window.DeckGLPolymer || {});
+</script>

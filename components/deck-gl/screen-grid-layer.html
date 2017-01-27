@@ -1,0 +1,103 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="./deck-gl-layer-behavior.html">
+
+<dom-module id="screen-grid-layer">
+  <script>
+    /*
+     * The `screen-grid-layer` wraps around the [ScreenGridLayer](https://uber.github.io/deck.gl/#/layers/core-layers/screen-grid-layer) in deck.gl.
+     *
+     * The ScreenGridLayer takes in an array of latitude and longitude
+     * coordinated points, aggregates them into histogram bins and renders as a
+     * grid.
+     *
+     * Note: The aggregation is done in screen space, so the data prop needs to
+     * be reaggregated by the layer whenever the map is zoomed or panned. This
+     * means that this layer is best used with small data set, however the
+     * visuals when used with the right data set can be quite effective.
+     *
+     * @demo demo/screen-grid-layer.html
+     */
+    Polymer({
+
+      is: 'screen-grid-layer',
+      behaviors: [
+        DeckGLPolymer.BaseLayer
+      ],
+      properties: {
+        /*
+         * Unit width of the bins.
+         */
+        unitWidth: {
+          type: Number,
+          value: 100
+        },
+        /*
+         * Unit height of the bins.
+         */
+        unitHeight: {
+          type: Number,
+          value: 100
+        },
+        /*
+         * Expressed as an rgba array, maximal color that could be rendered by a tile.
+         */
+        maxColor: {
+          type: Array,
+          value: function() {
+            return [0, 255, 0, 255];
+          }
+        },
+        /*
+         * Expressed as an rgba array, minimal color that could be rendered by a tile.
+         */
+        minColor: {
+          type: Array,
+          value: function() {
+            return [0, 0, 0, 255];
+          }
+        },
+        /*
+         * A map of accessor functions to retrieve specific data from the
+         * dataset. The following accessors are available for ScreenGridLayer:
+         * - getPosition  (default: object => object.position)
+         * - getWeight   (default: object => 1)
+         */
+        accessorFunctions: {
+          type: Object,
+          value: null
+        }
+
+      },
+
+      observers: [
+        '_updateProps(unitHeight, unitWidth, minColor, maxColor, accessorFunctions)',
+        '_updateLayer(_props)'
+      ],
+
+      get layer() {
+        return new DeckGL.ScreenGridLayer(this._cleanObject(this._props));
+      },
+
+      _updateProps: function() {
+        if (!this.data) return;
+        var props = this._getBaseProps();
+        props.unitHeight = this.unitHeight;
+        props.unitWidth = this.unitWidth;
+        props.minColor = this.minColor;
+        props.maxColor = this.maxColor;
+        if (this.accessorFunctions) {
+          props.getPosition = this.accessorFunctions.getPosition;
+          props.getWeight = this.accessorFunctions.getWeight;
+        }
+        this._props = props;
+      },
+
+      _updateLayer: function(_props) {
+        if (!_props) return;
+        this.fire('layer-updated', this.layer, {node: this.parentNode});
+      }
+
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,175 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="./luma-deck-bundle.html">
+
+<dom-module id="webgl-renderer">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      canvas#overlay {
+
+        @apply(--webgl-renderer);
+      }
+
+    </style>
+    <canvas id="overlay"
+      width="[[_width]]"
+      height="[[_height]]"
+      style$="[[_setStyle(_width, _height)]]"></canvas>
+  </template>
+
+  <script>
+    /*
+     * `webgl-renderer` provides a canvas and its webgl context.
+     */
+    Polymer({
+
+      is: 'webgl-renderer',
+
+      properties: {
+        /*
+         * whether to output debug messages.
+         */
+        debug: false,
+        /*
+         * gl instance provided by luma.gl.
+         */
+        gl: {
+          type: Object,
+          readonly: true,
+          notify: true
+        },
+        /*
+         * viewport of the webgl-renderer. It also defined the size of the canvas.
+         */
+        viewport: {
+          type: Object,
+          notify: true,
+          value: function() {
+            return {
+              x: 0,
+              y: 0,
+              width: 100,
+              height: 100
+            };
+          }
+        },
+        /*
+         * errors if any
+         */
+        error: {
+          type: Object,
+          notify: true,
+          readonly: true
+        },
+        /*
+         * gl options.
+         */
+        glOptions: {
+          type: Object,
+          value: function() {
+            return {preserveDrawingBuffer: true};
+          }
+        },
+        /*
+         * pixel ratio of device
+         */
+        pixelRatio: {
+          type: Number,
+          value: function() {
+            return (window && window.devicePixelRatio) || 1;
+          }
+        },
+        _width: {
+          type: Number,
+          computed: '_multiply(viewport.width, pixelRatio)'
+        },
+        _height: {
+          type: Number,
+          computed: '_multiply(viewport.height, pixelRatio)'
+        },
+        _x: Number,
+        _y: Number,
+        _w: Number,
+        _h: Number,
+        _animationFrame: Object
+      },
+
+      attached: function() {
+        this._initWebGL(this.$.overlay);
+        this._animationLoop();
+      },
+
+      detached: function() {
+        this._cancelAnimationLoop();
+      },
+
+      _initWebGL(canvas) {
+        if (!this.gl) {
+          try {
+            this.gl = LumaGL.createGLContext({
+              canvas: canvas,
+              debug: this.debug,
+              preserveDrawingBuffer: this.preserveDrawingBuffer
+            });
+          } catch (error) {
+            this.error = error;
+            this.fire('gl-error', error);
+            return;
+          }
+        }
+        this.fire('renderer-initialized', {canvas: canvas, gl: this.gl});
+      },
+
+      _multiply: function(val, multiplier) {
+        return val * multiplier;
+      },
+
+      _setStyle: function(_width, _height) {
+        return 'width: ' + _width + '; height: ' + _height + ';';
+      },
+
+      _animationLoop: function() {
+        this._renderFrame();
+        // Keep registering ourselves for the next animation frame
+        this._animationFrame = requestAnimationFrame(this._animationLoop.bind(this));
+      },
+
+      _cancelAnimationLoop: function() {
+        if (this._animationFrame) {
+          cancelAnimationFrame(this._animationFrame);
+        }
+      },
+
+      _updateGLViewport: function() {
+        var pixelRatio = this.pixelRatio;
+        var viewport = this.viewport;
+
+        var x = viewport.x * pixelRatio;
+        var y = viewport.y * pixelRatio;
+        var w = viewport.width * pixelRatio;
+        var h = viewport.height * pixelRatio;
+
+        if (x !== this._x || y !== this._y || w !== this._w || h !== this._h) {
+          this.gl.viewport(x, y, w, h);
+          this._x = x;
+          this._y = y;
+          this._w = w;
+          this._h = h;
+        }
+      },
+
+      _renderFrame() {
+        if (!this.gl || !this.viewport ||
+          this.viewport.width <= 0 || this.viewport.height <= 0) {
+          return;
+        }
+        this._updateGLViewport();
+        this.fire('render-frame', {gl: this.gl});
+      }
+
+    });
+  </script>
+</dom-module>

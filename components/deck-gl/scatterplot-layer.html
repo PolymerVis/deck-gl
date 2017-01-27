@@ -1,0 +1,86 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="./deck-gl-layer-behavior.html">
+
+<dom-module id="scatterplot-layer">
+  <script>
+    /*
+     * The `scatterplot-layer` wraps around the [Scatterplot Layer](https://uber.github.io/deck.gl/#/layers/core-layers/scatterplot-layer) in deck.gl.
+     *
+     * It takes in paired latitude and longitude coordinated points and renders them as circles with a certain radius.
+     *
+     * @demo demo/index.html
+     */
+    Polymer({
+
+      is: 'scatterplot-layer',
+      behaviors: [
+        DeckGLPolymer.BaseLayer
+      ],
+      properties: {
+        /*
+         * Width of stroke if drawing outline.
+         */
+        strokeWidth: {
+          type: Number,
+          value: 1
+        },
+        /*
+         * Global radius across all markers.
+         */
+        radius: {
+          type: Number,
+          value: 30
+        },
+        /*
+         * Only draw outline of dot.
+         */
+        drawOutline: {
+          type: Boolean,
+          value: false
+        },
+        /*
+         * A map of accessor functions to retrieve specific data from the
+         * dataset. The following accessors are available for ScatterplotLayer:
+         * - getPosition (default: object => object.position)
+         * - getRadius (default: object => object.radius)
+         * - getColor (default: object => object.color)
+         */
+        accessorFunctions: {
+          type: Object,
+          value: null
+        }
+
+      },
+
+      observers: [
+        '_updateProps(strokeWidth, radius, drawOutline, accessorFunctions)',
+        '_updateLayer(_props)'
+      ],
+
+      get layer() {
+        return new DeckGL.ScatterplotLayer(this._cleanObject(this._props));
+      },
+
+      _updateProps: function() {
+        if (!this.data) return;
+        var props = this._getBaseProps();
+        props.strokeWidth = this.strokeWidth;
+        props.radius = this.radius;
+        props.drawOutline = this.drawOutline;
+        if (this.accessorFunctions) {
+          props.getPosition = this.accessorFunctions.getPosition;
+          props.getRadius = this.accessorFunctions.getRadius;
+          props.getColor = this.accessorFunctions.getColor;
+        }
+        this._props = props;
+      },
+
+      _updateLayer: function(_props) {
+        if (!_props) return;
+        this.fire('layer-updated', this.layer, {node: this.parentNode});
+      }
+
+    });
+  </script>
+</dom-module>

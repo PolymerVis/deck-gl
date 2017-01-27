@@ -1,0 +1,38 @@
+{
+  "name": "deck-gl",
+  "version": "1.0.0",
+  "description": "Polymer wrappers for deck.gl and luma.gl",
+  "keywords": [
+    "polymer",
+    "web-components",
+    "deck.gl",
+    "luma.gl",
+    "deckgl",
+    "lumagl",
+    "mapboxgl",
+    "webgl",
+    "visualization",
+    "geospatial",
+    "map",
+    "overlay"
+  ],
+  "main": "build-luma-deck.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "eterna2 <eterna2@hotmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "deck.gl": "^3.1.1",
+    "luma.gl": "^2.10.4"
+  },
+  "devDependencies": {
+    "browserify": "^13.3.0",
+    "eslint": "^3.13.1",
+    "eslint-config-google": "^0.7.1",
+    "uglify-js": "^2.7.5"
+  }
+}
