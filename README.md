@@ -1,4 +1,5 @@
-## deck-gl
+deck-gl [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/PolymerVis/deck-gl)
+==========
 
 ### Usage
 API documentation and Demos [here](https://polymervis.github.io/deck-gl)
