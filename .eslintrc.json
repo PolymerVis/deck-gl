@@ -4,19 +4,29 @@
   },
   "globals": {
     "Polymer": false,
-    "mapboxgl": false,
-    "LumaGL": false,
+    "DeckGLPolymer": true,
     "DeckGL": false,
-    "DeckGLPolymer": false
+    "LumaGL": false
   },
   "extends": [
     "eslint:recommended",
-    "eslint-config-google"
+    "prettier"
   ],
   "plugins": [
-    "html"
+    "html",
+    "prettier"
   ],
   "rules": {
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "max-len": [
+      "error",
+      {
+        "ignoreStrings": true
+      }
+    ],
     "one-var": [
       "warn",
       {
@@ -25,7 +35,6 @@
       }
     ],
     "no-var": ["off"],
-    "comma-dangle": ["error", "never"],
     "guard-for-in":[
       "warn"
     ],
@@ -65,10 +74,6 @@
         ]
       }
     ],
-    "indent": [
-      "error",
-      2
-    ],
     "linebreak-style": [
       "error",
       "unix"
@@ -76,10 +81,6 @@
     "quotes": [
       "error",
       "single"
-    ],
-    "semi": [
-      "error",
-      "always"
     ]
   }
 }

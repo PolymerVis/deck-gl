@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>deck-gl demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+
+    <link rel="import" href="../../mapbox-gl/mapbox-gl.html">
+    <link rel="import" href="../deck-gl.html">
+    <link rel="import" href="../polygon-layer.html">
+    <link rel="import" href="../custom-layer.html">
+
+    <style is="custom-style">
+      body {
+        margin: 0px;
+        padding: 0px;
+        box-sizing: border-box;
+      }
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <template id="demo" is="dom-bind">
+      <mapbox-gl
+        id="map"
+        interactive
+        access-token="[[key]]"
+        latitude="{{lat}}"
+        longitude="{{lng}}"
+        zoom="{{zoom}}"
+        pitch="{{pitch}}"
+        bearing="{{bearing}}"></mapbox-gl>
+
+
+      <deck-gl id="deck"
+        for="map"
+        zoom="[[zoom]]"
+        latitude="[[lat]]"
+        longitude="[[lng]]"
+        pitch="[[pitch]]"
+        bearing="[[bearing]]">
+        <custom-layer
+          deck-gl-layer
+          fp64
+          script-src="./trips-layer.js"
+          layer-name="TripsLayer"
+          opacity=0.5
+          data="[[trips]]"
+          custom-props="[[customProps]]"
+          accessor-functions="[[tripAccessors]]"></custom-layer>
+
+
+        <polygon-layer
+          deck-gl-layer
+          fp64
+          pickable
+          extruded
+          opacity=0.5
+          light-settings="[[lights]]"
+          accessor-functions="[[accessorFunctions]]"
+          data="[[buildings]]"></polygon-layer>
+      </deck-gl>
+    </template>
+    <script>
+    // url to taxi data in datagov.sg
+var demo = document.querySelector('#demo');
+// please use your own mapboxgl api-key
+demo.key =
+  'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
+demo.lat = 40.72;
+demo.lng = -74;
+demo.zoom = 13;
+demo.pitch = 45;
+demo.opacity = 0.6;
+demo.color = [128, 128, 128];
+demo.elevation = 1;
+demo.bearing = 0;
+demo.geojson = null;
+demo.accessorFunctions = {
+  getPolygon: function(f) {
+    return f.geometry.coordinates[0];
+  },
+  getElevation: function(f) {
+    return f.properties.height;
+  },
+  getFillColor: function() {
+    return [74, 80, 87];
+  }
+};
+
+demo.tripAccessors = {
+  getPath: function(d) {
+    return d.segments;
+  },
+  getColor: function(d) {
+    return d.vendor === 0 ? [253, 128, 93] : [23, 184, 190];
+  }
+};
+
+demo.lights = {
+  lightsPosition: [-74.05, 40.7, 8000, -73.5, 41, 5000],
+  ambientRatio: 0.05,
+  diffuseRatio: 0.6,
+  specularRatio: 0.8,
+  lightsStrength: [2.0, 0.0, 0.0, 0.0],
+  numberOfLights: 2
+};
+demo.trips = [];
+demo.started = false;
+
+if (window.Worker) {
+  var buildingWorker = new Worker('building-data-decoder.js');
+  buildingWorker.onmessage = function(e) {
+    demo.buildings = e.data.data[0].features;
+  };
+
+  var tripsWorker = new Worker('hero-data-decoder.js');
+  tripsWorker.onmessage = function(e) {
+    //demo.buildings = e.data.data[0].features;
+    demo.trips = demo.trips.concat(e.data.data[0]);
+    if (!demo.started) {
+      animate();
+      demo.started = true;
+    }
+  };
+}
+
+function animate() {
+  var timestamp = Date.now();
+  var loopLength = 3600;
+  var loopTime = 60000;
+
+  var time = timestamp % loopTime / loopTime * loopLength;
+  demo.customProps = { currentTime: time, strokeWidth: 2, opacity: 0.3 };
+  window.requestAnimationFrame(animate);
+}
+
+// request taxi data from datagovsg
+function makeRequest(url, cb) {
+  var httpRequest = new XMLHttpRequest();
+  if (!httpRequest) {
+    alert('Giving up :( Cannot create an XMLHTTP instance');
+    return false;
+  }
+  httpRequest.onreadystatechange = dataLoaded;
+  httpRequest.open('GET', url);
+  httpRequest.send();
+
+  function dataLoaded() {
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+      if (httpRequest.status === 200) {
+        return cb(null, httpRequest.responseText);
+      } else {
+        return cb(httpRequest.error);
+      }
+    }
+  }
+}
+</script>
+  </body>
+</html>

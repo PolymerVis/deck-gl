@@ -46,12 +46,6 @@
               on-choropleth-tap="_onTap"
               accessor-functions="[[accessorFunctions]]"
               data="[[geojson]]"></choropleth-layer>
-            <choropleth-layer deck-gl-layer
-              draw-contour
-              opacity="[[opacity]]"
-              hide="[[hideContour(zoom)]]"
-              layer-id="outline"
-              data="[[geojson]]"></choropleth-layer>
           </deck-gl>
       </mapbox-gl>
     </template>
@@ -61,7 +55,7 @@
       var datagovsgKey = 'BWbh4KoRAq8W7iCGbZoqYtpwWxo2y6In'; // api-key
       var demo = document.querySelector('#demo');
       // please use your own mapboxgl api-key
-      demo.key = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpbG10dnA3NzY3OTZ0dmtwejN2ZnUycjYifQ.1W5oTOnWXQ9R1w8u3Oo1yA';
+      demo.key = 'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
       demo.lat = 1.3521;
       demo.lng = 103.8198;
       demo.zoom = 10;

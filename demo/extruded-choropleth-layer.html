@@ -40,38 +40,48 @@
             longitude="[[lng]]"
             pitch="[[pitch]]"
             bearing="[[bearing]]">
-            <arc-layer deck-gl-layer
-              layer-id="lineLayer"
-              data="[[arcData]]"></arc-layer>
+            <extruded-choropleth-layer deck-gl-layer
+              pickable
+              opacity="[[opacity]]"
+              on-choropleth-tap="_onTap"
+              accessor-functions="[[accessorFunctions]]"
+              data="[[geojson]]"></extruded-choropleth-layer>
           </deck-gl>
       </mapbox-gl>
     </template>
     <script>
+      // url to taxi data in datagov.sg
+      var url = './data/singapore-wgs84.geojson';
+      var datagovsgKey = 'BWbh4KoRAq8W7iCGbZoqYtpwWxo2y6In'; // api-key
       var demo = document.querySelector('#demo');
       // please use your own mapboxgl api-key
       demo.key = 'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
       demo.lat = 1.3521;
       demo.lng = 103.8198;
-      demo.zoom = 9;
-      demo.pitch = 60;
-      demo.bearing = -60;
-      demo.arcData = [
-        {
-          sourcePosition: [103.8198, 1.3521],
-          targetPosition: [103.8198, 1.3821],
-          color: [255, 0, 255]
-        },
-        {
-          sourcePosition: [103.8198, 1.3521],
-          targetPosition: [103.8498, 1.3821],
-          color: [255, 0, 255]
-        },
-        {
-          sourcePosition: [103.8198, 1.3521],
-          targetPosition: [103.7798, 1.3521],
-          color: [255, 0, 255]
+      demo.zoom = 10;
+      demo.pitch = 0;
+      demo.opacity = 0.5;
+      demo.hideContour = function(zoom) {
+        return zoom < 10;
+      };
+      demo.bearing = 0;
+      demo.geojson = null;
+      demo.accessorFunctions = {
+        getColor: function(feature) {
+          return [100, 100, 200];
         }
-      ];
+      };
+
+      if (window.Worker) {
+        var worker = new Worker('building-data-decoder.js');
+        worker.onmessage = function(e) {
+          console.log(e.data);
+          demo.data = e.data.data;
+        }
+      }
+
+
+
     </script>
   </body>
 </html>
