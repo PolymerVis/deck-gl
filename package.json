@@ -1,0 +1,27 @@
+{
+  "name": "my-app",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "postinstall": "bower install",
+    "build": "webpack --config webpack.config.js",
+    "tsc": "tsc",
+    "demo": "webpack-dev-server --config webpack.config.js",
+    "test": "wct --skip-plugin=local --configFile wct.conf.js",
+    "test:persist": "wct --skip-plugin=headless -p --configFile wct.conf.js",
+    "build:test:watch": "webpack --config webpack.test.js --watch",
+    "pretest": "webpack --config webpack.test.js",
+    "doc": "typedoc --out  doc/ "
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@deck.gl/core": "^5.2.0-beta.1",
+    "deck.gl": "^5.1.4",
+    "gl": "^4.0.4"
+  },
+  "devDependencies": {
+    "typescript": "^2.8.1",
+    "web-component-tester": "^6.2.0"
+  }
+}

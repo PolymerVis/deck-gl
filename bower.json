@@ -1,0 +1,22 @@
+{
+  "name": "deck-gl",
+  "description": "",
+  "authors": [],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "webcomponentsjs": "^1.0.12",
+    "polymer": "^2.1.0",
+    "polymer-decorators": "Polymer/polymer-decorators#^2.0.0"
+  },
+  "devDependencies": {
+    "web-component-tester": "^6.3.0"
+  }
+}
